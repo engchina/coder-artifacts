@@ -34,14 +34,14 @@ DEMO_LIST = [
     "card": {
       "index": 0,
     },
-    "title": "千问，启动！",
-    "description": "帮我画一个紫色的写着“千问，启动！”的按钮的界面，点击按钮用超大的字体显示 5 秒倒计时",
+    "title": "Qwen，Start！",
+    "description": "Help me design an interface with a purple button that says 'Qwen, Start!'. When the button is clicked, display a countdown from 5 in a very large font for 5 seconds.",
   },
   {
     "card": {
       "index": 1,
     },
     "title": "TODO list",
-    "description": "我想要一个 TODO list，可以添加任务，删除任务，整体色调用紫色"
+    "description": "I want a TODO list that allows me to add tasks, delete tasks, and I would like the overall color theme to be purple."
   },
 ]
