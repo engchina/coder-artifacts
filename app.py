@@ -18,7 +18,6 @@ from config import DEMO_LIST, SystemPrompt
 
 YOUR_API_TOKEN = os.getenv('YOUR_API_TOKEN')
 dashscope.api_key = YOUR_API_TOKEN
-dashscope.base_http_api_url = 'https://poc-dashscope.aliyuncs.com/api/v1'
 
 History = List[Tuple[str, str]]
 Messages = List[Dict[str, str]]
@@ -161,7 +160,7 @@ with gr.Blocks(css_paths="app.css") as demo:
               messages = history_to_messages(_history, _setting['system'])
               messages.append({'role': Role.USER, 'content': query})
 
-              gen = Generation.call(model="pre-qwen-coder-plus-chat",
+              gen = Generation.call(model="qwen2.5-coder-32b-instruct",
                                     messages=messages,
                                     result_format='message',
                                     stream=True)
