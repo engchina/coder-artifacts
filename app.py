@@ -199,4 +199,4 @@ with gr.Blocks(css_paths="app.css") as demo:
                       outputs=[code_output, history, sandbox, state_tab, code_drawer])
 
 if __name__ == "__main__":
-    demo.queue(default_concurrency_limit=20).launch()
+    demo.queue(default_concurrency_limit=20).launch(ssr_mode=False)
