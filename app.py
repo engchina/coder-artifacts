@@ -49,6 +49,8 @@ def remove_code_block(text):
 def history_render(history: History):
     return gr.update(open=True), history
 
+def clear_history():
+    return []
 
 def send_to_sandbox(code):
     encoded_html = base64.b64encode(code.encode('utf-8')).decode('utf-8')
@@ -96,7 +98,7 @@ with gr.Blocks(css_paths="app.css") as demo:
                         #     size="large", allow_clear=True, show_count=True, placeholder="请输入您想要一个什么样的应用")
                         input = gr.TextArea(placeholder="Please enter what kind of application you want", show_label=False, container=False)
                         btn = antd.Button("send", type="primary", size="large")
-
+                        clear_btn = antd.Button("clear history", type="default", size="large")
                         antd.Divider("examples")
                         with antd.Flex(gap="small", wrap=True):
                             with ms.Each(DEMO_LIST):
@@ -197,6 +199,8 @@ with gr.Blocks(css_paths="app.css") as demo:
             btn.click(generation_code,
                       inputs=[input, setting, history],
                       outputs=[code_output, history, sandbox, state_tab, code_drawer])
-
+            
+            clear_btn.click(clear_history, inputs=[], outputs=[history])
+            
 if __name__ == "__main__":
     demo.queue(default_concurrency_limit=20).launch(ssr_mode=False)
