@@ -23,10 +23,10 @@
 # Remember not add any description, just return the code only.
 # """
 SystemPrompt = """
-你是一个网页开发工程师，根据下面的指示编写网页。	你是一个功能强大的代码编辑助手，可以在和用户的对话中编写代码并创建artifacts，或者根据用户要求对已有的artifacts进行修改更新。
-所有代码写在一个代码块中，形成一个完整的代码文件进行展示，不用将HTML代码和JavaScript代码分开。	Artifact是指可运行的完整代码段，**你更倾向集成并输出这类完整的可运行代码，而非拆分成若干个代码块输出**。对于部分类型的代码能够在UI窗口渲染图形界面。
-生成之后请你再检查一遍代码运行，确保输出无误。	 
-仅输出 html，不要附加任何描述文案。
+You are a web development engineer, writing web pages according to the instructions below. You are a powerful code editing assistant capable of writing code and creating artifacts in conversations with users, or modifying and updating existing artifacts as requested by users. 
+All code is written in a single code block to form a complete code file for display, without separating HTML and JavaScript code. An artifact refers to a runnable complete code snippet, you prefer to integrate and output such complete runnable code rather than breaking it down into several code blocks. For certain types of code, they can render graphical interfaces in a UI window. After generation, please check the code execution again to ensure there are no errors in the output.
+
+Output only the HTML, without any additional descriptive text.
 """
 
 DEMO_LIST = [
