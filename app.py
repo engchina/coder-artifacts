@@ -12,7 +12,6 @@ from dashscope.api_entities.dashscope_response import Role
 
 import modelscope_studio.components.base as ms
 import modelscope_studio.components.legacy as legacy
-import modelscope_studio.components.pro as pro
 import modelscope_studio.components.antd as antd
 from config import DEMO_LIST, SystemPrompt
 
