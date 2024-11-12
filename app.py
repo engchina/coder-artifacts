@@ -12,7 +12,6 @@ from dashscope.api_entities.dashscope_response import Role
 
 import modelscope_studio.components.base as ms
 import modelscope_studio.components.legacy as legacy
-import modelscope_studio.components.pro as pro
 import modelscope_studio.components.antd as antd
 from config import DEMO_LIST, SystemPrompt
 
@@ -76,29 +75,30 @@ def send_to_sandbox(code):
 def demo_card_click(e: gr.EventData):
     index = e._data['component']['index']
     return DEMO_LIST[index]['description']
-    
+
 with gr.Blocks(css_paths="app.css") as demo:
     history = gr.State([])
     setting = gr.State({
         "system": SystemPrompt,
     })
 
-    with ms.Application():
-        with antd.ConfigProvider(locale="zh_CN"):
-            with antd.Splitter():
-                with antd.SplitterPanel(default_size="30%", max="70%", min="10%", elem_style={"padding": "20px"}):
-                    with antd.Flex(vertical=True, gap="large", wrap=True):
+    with ms.Application() as app:
+        with antd.ConfigProvider():
+            with antd.Row(gutter=[32, 12]) as layout:
+                with antd.Col(span=24, md=8):
+                    with antd.Flex(vertical=True, gap="middle", wrap=True):
                         header = gr.HTML("""
                                   <div class="left_header">
                                    <img src="//img.alicdn.com/imgextra/i2/O1CN01KDhOma1DUo8oa7OIU_!!6000000000220-1-tps-240-240.gif" width="200px" />
                                    <h1>Qwen2.5-Coder</h2>
                                   </div>
                                    """)
-                        # input = antd.InputTextarea(
-                        #     size="large", allow_clear=True, show_count=True, placeholder="请输入您想要一个什么样的应用")
-                        input = gr.TextArea(placeholder="Please enter what kind of application you want", show_label=False, container=False)
+                        input = antd.InputTextarea(
+                            size="large", allow_clear=True, placeholder="Please enter what kind of application you want")
+                        # input = gr.TextArea(placeholder="请输入您想要一个什么样的应用", show_label=False, container=False)
                         btn = antd.Button("send", type="primary", size="large")
                         clear_btn = antd.Button("clear history", type="default", size="large")
+
                         antd.Divider("examples")
                         with antd.Flex(gap="small", wrap=True):
                             with ms.Each(DEMO_LIST):
@@ -140,19 +140,20 @@ with gr.Blocks(css_paths="app.css") as demo:
                     history_drawer.close(lambda: gr.update(
                         open=False), inputs=[], outputs=[history_drawer])
 
-                with antd.SplitterPanel(elem_classes="right_panel"):
-                    gr.HTML('<div class="render_header"><span class="header_btn"></span><span class="header_btn"></span><span class="header_btn"></span></div>')
-                    with antd.Tabs(active_key="empty", render_tab_bar="() => null") as state_tab:
-                        with antd.Tabs.Item(key="empty"):
-                          empty = antd.Empty(description="empty input", elem_classes="right_content")
-                        with antd.Tabs.Item(key="loading"):
-                          loading = antd.Spin(True, tip="coding...", size="large", elem_classes="right_content")
-                        with antd.Tabs.Item(key="render"):
-                          sandbox = gr.HTML(elem_classes="html_content")
-                          # sandbox = pro.FrontendCodeSandbox(elem_style={
-                          #   'height': '920px',
-                          #   'width': '100%'
-                          # })
+                with antd.Col(span=24, md=16):
+                    with ms.Div(elem_classes="right_panel"):
+                        gr.HTML('<div class="render_header"><span class="header_btn"></span><span class="header_btn"></span><span class="header_btn"></span></div>')
+                        with antd.Tabs(active_key="empty", render_tab_bar="() => null") as state_tab:
+                            with antd.Tabs.Item(key="empty"):
+                                empty = antd.Empty(description="empty input", elem_classes="right_content")
+                                with antd.Tabs.Item(key="loading"):
+                                    loading = antd.Spin(True, tip="coding...", size="large", elem_classes="right_content")
+                                with antd.Tabs.Item(key="render"):
+                                    sandbox = gr.HTML(elem_classes="html_content")
+                                # sandbox = pro.FrontendCodeSandbox(elem_style={
+                                #   'height': '920px',
+                                #   'width': '100%'
+                                # })
 
             def generation_code(query: Optional[str], _setting: Dict[str, str], _history: Optional[History]):
               if query is None:
@@ -201,6 +202,6 @@ with gr.Blocks(css_paths="app.css") as demo:
                       outputs=[code_output, history, sandbox, state_tab, code_drawer])
             
             clear_btn.click(clear_history, inputs=[], outputs=[history])
-            
+
 if __name__ == "__main__":
-    demo.queue(default_concurrency_limit=20).launch(ssr_mode=False)
+    demo.queue(default_concurrency_limit=20).launch()

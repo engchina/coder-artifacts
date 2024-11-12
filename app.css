@@ -6,10 +6,10 @@
 }
 
 .right_panel {
-  margin: 20px;
   margin-top: 66px;
   border: 1px solid #BFBFC4;
   border-radius: 8px;
+  overflow: hidden;;
 }
 
 .render_header {

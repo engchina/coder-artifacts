@@ -1,2 +1,2 @@
 dashscope
-https://modelscope-demo-widget.oss-cn-zhangjiakou.aliyuncs.com/modelscope_studio-1.0.0b2-py3-none-any.whl
+modelscope_studio~=1.0.0b

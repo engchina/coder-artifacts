@@ -41,6 +41,13 @@ DEMO_LIST = [
     "card": {
       "index": 1,
     },
+    "title": "Spam with emojis!",
+    "description": "Write code in a single HTML file: Capture the click event, place a random number of emojis at the click position, and add gravity and collision effects to each emoji."
+  },
+  {
+    "card": {
+      "index": 2,
+    },
     "title": "TODO list",
     "description": "I want a TODO list that allows me to add tasks, delete tasks, and I would like the overall color theme to be purple."
   },
