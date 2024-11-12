@@ -204,4 +204,4 @@ with gr.Blocks(css_paths="app.css") as demo:
             clear_btn.click(clear_history, inputs=[], outputs=[history])
 
 if __name__ == "__main__":
-    demo.queue(default_concurrency_limit=20).launch()
+    demo.queue(default_concurrency_limit=20).launch(ssr_mode=False)
