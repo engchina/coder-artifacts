@@ -83,7 +83,7 @@ with gr.Blocks(css_paths="app.css") as demo:
     })
 
     with ms.Application() as app:
-        with antd.ConfigProvider(locale="zh_CN"):
+        with antd.ConfigProvider():
             with antd.Row(gutter=[32, 12]) as layout:
                 with antd.Col(span=24, md=8):
                     with antd.Flex(vertical=True, gap="middle", wrap=True):
@@ -94,27 +94,27 @@ with gr.Blocks(css_paths="app.css") as demo:
                                   </div>
                                    """)
                         input = antd.InputTextarea(
-                            size="large", allow_clear=True, placeholder="请输入您想要一个什么样的应用")
+                            size="large", allow_clear=True, placeholder="Please enter what kind of application you want")
                         # input = gr.TextArea(placeholder="请输入您想要一个什么样的应用", show_label=False, container=False)
-                        btn = antd.Button("生成", type="primary", size="large")
-                        clear_btn = antd.Button("清空历史", type="default", size="large")
+                        btn = antd.Button("send", type="primary", size="large")
+                        clear_btn = antd.Button("clear history", type="default", size="large")
 
-                        antd.Divider("示例")
+                        antd.Divider("examples")
                         with antd.Flex(gap="small", wrap=True):
                             with ms.Each(DEMO_LIST):
                               with antd.Card(hoverable=True, as_item="card") as demoCard:
                                 antd.CardMeta()
                               demoCard.click(demo_card_click, outputs=[input])
 
-                        antd.Divider("设置")
+                        antd.Divider("setting")
 
                         with antd.Flex(gap="small", wrap=True):
                             settingPromptBtn = antd.Button(
-                                "⚙️ 设置系统 Prompt", type="default")
-                            codeBtn = antd.Button("🧑‍💻 查看代码", type="default")
-                            historyBtn = antd.Button("📜 历史记录", type="default")
+                                "⚙️ set system Prompt", type="default")
+                            codeBtn = antd.Button("🧑‍💻 view code", type="default")
+                            historyBtn = antd.Button("📜 history", type="default")
 
-                    with antd.Modal(open=False, title="设置系统 Prompt", width="800px") as system_prompt_modal:
+                    with antd.Modal(open=False, title="set system Prompt", width="800px") as system_prompt_modal:
                         systemPromptInput = antd.InputTextarea(
                             SystemPrompt, auto_size=True)
 
@@ -125,7 +125,7 @@ with gr.Blocks(css_paths="app.css") as demo:
                     system_prompt_modal.cancel(lambda: gr.update(
                         open=False), outputs=[system_prompt_modal])
 
-                    with antd.Drawer(open=False, title="代码", placement="left", width="750px") as code_drawer:
+                    with antd.Drawer(open=False, title="code", placement="left", width="750px") as code_drawer:
                         code_output = legacy.Markdown()
 
                     codeBtn.click(lambda: gr.update(open=True),
@@ -133,7 +133,7 @@ with gr.Blocks(css_paths="app.css") as demo:
                     code_drawer.close(lambda: gr.update(
                         open=False), inputs=[], outputs=[code_drawer])
 
-                    with antd.Drawer(open=False, title="历史记录", placement="left", width="900px") as history_drawer:
+                    with antd.Drawer(open=False, title="history", placement="left", width="900px") as history_drawer:
                         history_output = legacy.Chatbot(show_label=False, flushing=False, height=960, elem_classes="history_chatbot")
 
                     historyBtn.click(history_render, inputs=[history], outputs=[history_drawer, history_output])
@@ -145,9 +145,9 @@ with gr.Blocks(css_paths="app.css") as demo:
                         gr.HTML('<div class="render_header"><span class="header_btn"></span><span class="header_btn"></span><span class="header_btn"></span></div>')
                         with antd.Tabs(active_key="empty", render_tab_bar="() => null") as state_tab:
                             with antd.Tabs.Item(key="empty"):
-                                empty = antd.Empty(description="请在左侧输入您需要的界面后生成", elem_classes="right_content")
+                                empty = antd.Empty(description="empty input", elem_classes="right_content")
                                 with antd.Tabs.Item(key="loading"):
-                                    loading = antd.Spin(True, tip="正在生成代码中...", size="large", elem_classes="right_content")
+                                    loading = antd.Spin(True, tip="coding...", size="large", elem_classes="right_content")
                                 with antd.Tabs.Item(key="render"):
                                     sandbox = gr.HTML(elem_classes="html_content")
                                 # sandbox = pro.FrontendCodeSandbox(elem_style={
