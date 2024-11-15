@@ -1,3 +1,17 @@
+# Code Artifacts
+
+## Installation
+
+```
+conda create -n coder-artifacts python=3.11 -y
+conda activate coder-artifacts
+```
+
+```
+pip install -r requirements.txt
+# pip list --format=freeze > requirements.txt
+```
+
 ---
 title: Qwen2.5 Coder Artifacts
 emoji: 🐢
