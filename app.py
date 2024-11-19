@@ -21,8 +21,6 @@ load_dotenv(find_dotenv())
 # OpenAI or OCIGenAI
 llm_type = os.environ.get("LLM_TYPE", "OpenAI")
 
-
-
 History = List[Tuple[str, str]]
 Messages = List[Dict[str, str]]
 
