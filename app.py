@@ -1,4 +1,5 @@
 import base64
+import json
 import os
 import re
 from typing import Dict, List, Optional, Tuple
@@ -7,6 +8,7 @@ import gradio as gr
 import modelscope_studio.components.antd as antd
 import modelscope_studio.components.base as ms
 import modelscope_studio.components.legacy as legacy
+import oci
 from dashscope.api_entities.dashscope_response import Role
 from dotenv import find_dotenv, load_dotenv
 from openai import OpenAI
@@ -16,10 +18,10 @@ from config import DEMO_LIST, SystemPrompt
 # read local .env file
 load_dotenv(find_dotenv())
 
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY"),  # This is the default and can be omitted
-    base_url=os.environ.get("OPENAI_BASE_URL"),  # This is the default and can be omitted
-)
+# OpenAI or OCIGenAI
+llm_type = os.environ.get("LLM_TYPE", "OpenAI")
+
+
 
 History = List[Tuple[str, str]]
 Messages = List[Dict[str, str]]
@@ -211,21 +213,107 @@ with gr.Blocks(css_paths="app.css") as demo:
                 #             % (response.request_id, response.status_code, response.code,
                 #                response.message))
 
-                try:
-                    gen = client.chat.completions.create(
-                        messages=messages,
-                        model="gpt-4",
-                        stream=True,
-                    )
+                if llm_type == "OpenAI":
+                    try:
+                        client = OpenAI(
+                            api_key=os.environ.get("OPENAI_API_KEY"),  # This is the default and can be omitted
+                            base_url=os.environ.get("OPENAI_BASE_URL"),  # This is the default and can be omitted
+                        )
 
-                    # Track the full content for history
-                    collected_content = ""
+                        gen = client.chat.completions.create(
+                            messages=messages,
+                            model="gpt-4",
+                            stream=True,
+                        )
 
-                    # Process each streamed response
-                    for chunk in gen:
-                        if chunk.choices[0].delta.content:
-                            content = chunk.choices[0].delta.content
-                            collected_content += content
+                        # Track the full content for history
+                        collected_content = ""
+
+                        # Process each streamed response
+                        for chunk in gen:
+                            if chunk.choices[0].delta.content:
+                                content = chunk.choices[0].delta.content
+                                collected_content += content
+
+                                # Intermediate yield for streaming
+                                yield {
+                                    code_output: collected_content,
+                                    state_tab: gr.update(active_key="loading"),
+                                    code_drawer: gr.update(open=True),
+                                }
+
+                        _history = messages_to_history(messages + [{
+                            'role': 'assistant',
+                            'content': collected_content
+                        }])
+
+                        yield {
+                            code_output: collected_content,
+                            history: _history,
+                            sandbox: send_to_sandbox(remove_code_block(collected_content)),
+                            state_tab: gr.update(active_key="render"),
+                            code_drawer: gr.update(open=False),
+                        }
+
+                    except Exception as e:
+                        raise ValueError(f'OpenAI API Error: {str(e)}')
+                else:
+                    try:
+                        # Initialize OCI GenAI client
+                        config = oci.config.from_file('~/.oci/config', os.environ.get("CONFIG_PROFILE"))
+                        endpoint = "https://inference.generativeai.us-chicago-1.oci.oraclecloud.com"
+
+                        generative_ai_inference_client = oci.generative_ai_inference.GenerativeAiInferenceClient(
+                            config=config,
+                            service_endpoint=endpoint,
+                            retry_strategy=oci.retry.NoneRetryStrategy(),
+                            timeout=(10, 240)
+                        )
+
+                        # Prepare chat request
+                        chat_detail = oci.generative_ai_inference.models.ChatDetails()
+                        chat_request = oci.generative_ai_inference.models.CohereChatRequest()
+
+                        # Convert the messages to the format expected by OCI GenAI
+                        # Assuming messages is a list of dictionaries with 'role' and 'content' keys
+                        formatted_messages = []
+                        for msg in messages:
+                            if msg['role'] == 'user':
+                                formatted_messages.append(msg['content'])
+                            elif msg['role'] == 'assistant':
+                                formatted_messages.append(f"Assistant: {msg['content']}")
+                            elif msg['role'] == 'system':
+                                # formatted_messages.append(f"System: {msg['content']}")
+                                chat_request.preamble_override = f"{msg['content']}"
+
+                        # Join all messages with newlines to create the context
+                        chat_request.message = "\n".join(formatted_messages)
+
+                        # Set other parameters
+                        chat_request.max_tokens = 4000
+                        chat_request.temperature = 0
+                        chat_request.frequency_penalty = 0
+                        chat_request.top_p = 0.75
+                        chat_request.top_k = 0
+                        chat_request.is_stream = True
+
+                        # Set the model and compartment
+                        chat_detail.serving_mode = oci.generative_ai_inference.models.OnDemandServingMode(
+                            model_id="cohere.command-r-plus-08-2024"
+                        )
+                        chat_detail.chat_request = chat_request
+                        chat_detail.compartment_id = os.environ.get("COMPARTMENT_ID")
+
+                        # Make the API call
+                        chat_response = generative_ai_inference_client.chat(chat_detail)
+
+                        # Track the full content for history
+                        collected_content = ""
+
+                        # Process each chunk as if it were streamed
+                        for event in chat_response.data.events():
+                            chunk = json.loads(event.data)["text"]
+                            collected_content += chunk
 
                             # Intermediate yield for streaming
                             yield {
@@ -234,21 +322,23 @@ with gr.Blocks(css_paths="app.css") as demo:
                                 code_drawer: gr.update(open=True),
                             }
 
-                    _history = messages_to_history(messages + [{
-                        'role': 'assistant',
-                        'content': collected_content
-                    }])
+                        # Update the message history
+                        _history = messages_to_history(messages + [{
+                            'role': 'assistant',
+                            'content': collected_content
+                        }])
 
-                    yield {
-                        code_output: collected_content,
-                        history: _history,
-                        sandbox: send_to_sandbox(remove_code_block(collected_content)),
-                        state_tab: gr.update(active_key="render"),
-                        code_drawer: gr.update(open=False),
-                    }
+                        # Final yield with complete content
+                        yield {
+                            code_output: collected_content,
+                            history: _history,
+                            sandbox: send_to_sandbox(remove_code_block(collected_content)),
+                            state_tab: gr.update(active_key="render"),
+                            code_drawer: gr.update(open=False),
+                        }
 
-                except Exception as e:
-                    raise ValueError(f'OpenAI API Error: {str(e)}')
+                    except Exception as e:
+                        raise ValueError(f'OCI GenAI API Error: {str(e)}')
 
 
             btn.click(generation_code,

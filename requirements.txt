@@ -6,8 +6,11 @@ annotated-types==0.7.0
 anyio==4.6.2.post1
 attrs==24.2.0
 certifi==2024.8.30
+cffi==1.17.1
 charset-normalizer==3.4.0
+circuitbreaker==2.0.0
 click==8.1.7
+cryptography==43.0.3
 dashscope==1.20.12
 distro==1.9.0
 fastapi==0.115.5
@@ -30,6 +33,7 @@ mdurl==0.1.2
 modelscope_studio==1.0.0b4
 multidict==6.1.0
 numpy==2.1.3
+oci==2.138.1
 openai==1.54.4
 orjson==3.10.11
 packaging==24.2
@@ -37,11 +41,14 @@ pandas==2.2.3
 pillow==11.0.0
 pip==24.2
 propcache==0.2.0
+pycparser==2.22
 pydantic==2.9.2
 pydantic_core==2.23.4
 pydub==0.25.1
 Pygments==2.18.0
+pyOpenSSL==24.2.1
 python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
 python-multipart==0.0.12
 pytz==2024.2
 PyYAML==6.0.2

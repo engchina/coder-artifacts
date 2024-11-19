@@ -34,8 +34,8 @@ DEMO_LIST = [
     "card": {
       "index": 0,
     },
-    "title": "Qwen，Start！",
-    "description": "Help me design an interface with a purple button that says 'Qwen, Start!'. When the button is clicked, display a countdown from 5 in a very large font for 5 seconds.",
+    "title": "OCI GenAI Cohere，Start！",
+    "description": "Help me design an interface with a purple button that says 'OCI GenAI Cohere, Start!'. When the button is clicked, display a countdown from 5 in a very large font for 5 seconds.",
   },
   {
     "card": {

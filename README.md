@@ -12,16 +12,18 @@ pip install -r requirements.txt
 # pip list --format=freeze > requirements.txt
 ```
 
----
-title: Qwen2.5 Coder Artifacts
-emoji: 🐢
-colorFrom: gray
-colorTo: red
-sdk: gradio
-sdk_version: 5.5.0
-app_file: app.py
-pinned: false
-license: apache-2.0
----
+## How to use
+
+```
+cp .env.example .env
+```
+
+```
+python app.py
+```
+
+Open your browser and access [http://127.0.0.1:7860/](http://127.0.0.1:7860/)
+
+## Others
 
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
