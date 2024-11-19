@@ -1,4 +1,4 @@
-# Code Artifacts
+# Coder Artifacts
 
 ## Installation
 
